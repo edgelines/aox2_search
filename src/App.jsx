@@ -3,14 +3,14 @@ import React, { useState, useEffect } from "react";
 import { Grid } from '@mui/material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import axios from 'axios';
-import { myJSON } from './components/util/config'
+import { API } from './components/util/config'
 
 function App() {
 
     const [data, setData] = useState([])
 
     const fetchData = async () => {
-        const res = await axios.get(`${myJSON}/search`);
+        const res = await axios.get(`${API}/info/StockSearch`);
         const data = res.data.map((item, index) => {
             return {
                 ...item,
@@ -30,12 +30,33 @@ function App() {
         { field: '시가총액(억원)', headerName: '시총(억원)', width: 90, headerAlign: 'center', align: 'right', },
         { field: '유보율', headerName: '유보율', width: 80, headerAlign: 'center', align: 'right', },
         { field: '부채비율', headerName: '부채비율', width: 80, headerAlign: 'center', align: 'right', },
-        { field: 'PER', headerName: 'PER', width: 80, headerAlign: 'center', align: 'right', },
-        { field: 'PBR', headerName: 'PBR', width: 80, headerAlign: 'center', align: 'right', },
+        {
+            field: 'PER', headerName: 'PER', width: 80, headerAlign: 'center', align: 'right',
+            valueFormatter: (params) => {
+                if (params.value == null) {
+                    return '';
+                }
+                else if (params.value === 0) {
+                    return 0;
+                }
+                return `${params.value.toFixed(2)}`;
+            },
+        },
+        {
+            field: 'PBR', headerName: 'PBR', width: 80, headerAlign: 'center', align: 'right',
+            valueFormatter: (params) => {
+                if (params.value == null) {
+                    return '';
+                } else if (params.value === 0) {
+                    return 0;
+                }
+                return `${params.value.toFixed(2)}`;
+            },
+        },
     ]
     return (
         <div className="App">
-            <Grid container sx={{ p: 2 }}>
+            <Grid container sx={{ p: 2, maxHeight: '95vh' }}>
                 <DataGrid rows={data} columns={columns}
                     getRowHeight={() => 'auto'}
                     slots={{ toolbar: GridToolbar }}
